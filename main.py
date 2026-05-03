@@ -43,8 +43,9 @@ TIER_LABELS = {"basic": "Basic Delivery", "certified": "Certified Delivery", "cu
 
 app = FastAPI(title="LegalDrop")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
-
+from jinja2 import FileSystemLoader, Environment as JinjaEnv
+_jinja_env = JinjaEnv(loader=FileSystemLoader(["app", "app/templates"]))
+templates = Jinja2Templates(env=_jinja_env)
 
 @app.on_event("startup")
 async def startup():
