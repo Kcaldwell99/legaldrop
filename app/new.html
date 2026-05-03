@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}New Delivery — LegalDrop{% endblock %}
+{% block content %}
+<div class="page-shell narrow">
+  <div class="page-header">
+    <div>
+      <h2>New Delivery</h2>
+      <p class="subhead">Send a certified legal document</p>
+    </div>
+  </div>
+
+  <form method="post" action="/deliveries/new" enctype="multipart/form-data" id="delivery-form">
+
+    <div class="form-section">
+      <h3>Recipient</h3>
+      <div class="field-row">
+        <div class="field">
+          <label>Recipient Email <span class="required">*</span></label>
+          <input type="email" name="recipient_email" required autofocus/>
+        </div>
+        <div class="field">
+          <label>Recipient Name <small>(optional)</small></label>
+          <input type="text" name="recipient_name"/>
+        </div>
+      </div>
+      <div class="field-check">
+        <input type="checkbox" id="require_account" name="require_account" value="true"/>
+        <label for="require_account">
+          Require recipient to create a LegalDrop account to access the document
+          <span class="field-note">— stronger identity verification</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Document</h3>
+      <div class="field">
+        <label>Subject / Title <span class="required">*</span></label>
+        <input type="text" name="subject" required
+               placeholder="e.g. Demand Letter — Smith v. Jones"/>
+      </div>
+      <div class="field">
+        <label>Message to Recipient <small>(optional)</small></label>
+        <textarea name="message" rows="3"
+                  placeholder="e.g. Please review the attached demand letter and respond within 30 days."></textarea>
+      </div>
+      <div class="field">
+        <label>Matter / File Reference <small>(optional)</small></label>
+        <input type="text" name="matter_ref" placeholder="e.g. 2024-CV-1234"/>
+      </div>
+      <div class="field">
+        <label>Document File <span class="required">*</span></label>
+        <div class="upload-zone" id="drop-zone">
+          <input type="file" name="file" id="file-input" required
+                 onchange="handleFile(this.files[0])"/>
+          <label for="file-input" class="upload-label">
+            <div class="upload-icon">📁</div>
+            <div>
+              <strong>Click to select or drag file here</strong>
+              <span>Any file type — PDF, Word, images, video — up to 500 MB</span>
+            </div>
+          </label>
+          <div class="file-chosen" id="file-chosen" style="display:none"></div>
+        </div>
+      </div>
+      <div class="field-check">
+        <input type="checkbox" id="allow_download" name="allow_download" value="true" checked/>
+        <label for="allow_download">Allow recipient to download the file</label>
+      </div>
+      <div class="field">
+        <label>Link Expires After</label>
+        <select name="expires_hours">
+          <option value="24">24 hours</option>
+          <option value="48">48 hours</option>
+          <option value="72" selected>72 hours (recommended)</option>
+          <option value="168">7 days</option>
+          <option value="720">30 days</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Delivery Tier</h3>
+      <div class="tier-options">
+        <label class="tier-option" for="tier-basic">
+          <input type="radio" name="tier" id="tier-basic" value="basic"
+                 onchange="updateTier('basic')"/>
+          <div class="tier-opt-body">
+            <div class="tier-opt-top">
+              <span class="tier-opt-name">Basic Delivery</span>
+              <span class="tier-opt-price">$9.99</span>
+            </div>
+            <p class="tier-opt-desc">Secure delivery link · SHA-256 Integrity Certificate · Delivery timestamp</p>
+          </div>
+        </label>
+
+        <label class="tier-option tier-option-featured" for="tier-certified">
+          <input type="radio" name="tier" id="tier-certified" value="certified"
+                 checked onchange="updateTier('certified')"/>
+          <div class="tier-opt-body">
+            <div class="tier-opt-top">
+              <span class="tier-opt-name">Certified Delivery <span class="badge-popular">Most Popular</span></span>
+              <span class="tier-opt-price">$19.99</span>
+            </div>
+            <p class="tier-opt-desc">Everything in Basic · Receipt logging · Evidentix custody events · D&R Certificate PDF</p>
+          </div>
+        </label>
+
+        <label class="tier-option" for="tier-custody">
+          <input type="radio" name="tier" id="tier-custody" value="custody"
+                 onchange="updateTier('custody')"/>
+          <div class="tier-opt-body">
+            <div class="tier-opt-top">
+              <span class="tier-opt-name">Custody Package <span class="badge-b2b">Litigation</span></span>
+              <span class="tier-opt-price">$49.99</span>
+            </div>
+            <p class="tier-opt-desc">Everything in Certified · Full Evidentix chain-of-custody PDF · Court-formatted exhibit</p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="price-summary">
+        <span id="price-label">Certified Delivery</span>
+        <strong id="price-value">$19.99</strong>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-full btn-lg" id="submit-btn">
+      Send Certified Document →
+    </button>
+    <p class="submit-note">
+      Your document will be certified by Evidentix immediately upon submission.
+      The recipient will receive their access email within seconds.
+    </p>
+
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const PRICES = { basic: 9.99, certified: 19.99, custody: 49.99 };
+const LABELS = { basic: 'Basic Delivery', certified: 'Certified Delivery', custody: 'Custody Package' };
+
+function updateTier(tier) {
+  document.getElementById('price-label').textContent = LABELS[tier];
+  document.getElementById('price-value').textContent = '$' + PRICES[tier].toFixed(2);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const chosen = document.getElementById('file-chosen');
+  chosen.style.display = 'flex';
+  chosen.innerHTML = `<span>📎 ${file.name}</span><span class="file-size">${(file.size/1024/1024).toFixed(1)} MB</span>`;
+  document.querySelector('.upload-label').style.display = 'none';
+}
+
+const zone = document.getElementById('drop-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) { document.getElementById('file-input').files = e.dataTransfer.files; handleFile(f); }
+});
+</script>
+{% endblock %}

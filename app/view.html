@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ d.subject }} — LegalDrop{% endblock %}
+{% block content %}
+<div class="recipient-shell">
+  <div class="recipient-card">
+    <div class="recipient-header">
+      <div class="sender-badge">Legal document from</div>
+      <h2>{{ d.subject }}</h2>
+      {% if d.message %}
+        <p class="recipient-message">{{ d.message }}</p>
+      {% endif %}
+    </div>
+
+    {% if d.evidentix_verified %}
+    <div class="cert-notice">
+      <span class="cert-icon">🔒</span>
+      <div>
+        <strong>Evidentix Certified Document</strong>
+        <p>This document's integrity has been cryptographically verified.
+           Your access is being logged in a tamper-evident chain-of-custody record.</p>
+        {% if d.sha256 %}
+          <code class="sha-display">SHA-256: {{ d.sha256[:48] }}…</code>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="doc-info">
+      <div class="doc-icon">📄</div>
+      <div class="doc-meta">
+        <strong>{{ d.filename }}</strong>
+        <span>{{ (d.file_size_bytes / 1024 / 1024) | round(2) }} MB</span>
+      </div>
+    </div>
+
+    <div class="recipient-actions">
+      {% if download_url %}
+        <a href="{{ download_url }}" class="btn btn-lg" target="_blank">
+          ⬇ Download Document
+        </a>
+      {% endif %}
+
+      {% if not d.acknowledged_at %}
+        <form method="post" action="/r/{{ token }}/acknowledge">
+          <button type="submit" class="btn btn-lg btn-green">
+            ✓ I confirm receipt of this document
+          </button>
+        </form>
+      {% else %}
+        <div class="ack-confirmed">
+          ✅ You acknowledged receipt on {{ d.acknowledged_at | dt }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if d.tier in ['certified', 'custody'] %}
+    <div class="recipient-footer">
+      <p>
+        Your access to this document has been recorded with your IP address
+        and timestamp. This information is part of a certified chain-of-custody
+        record maintained by Evidentix and may be used as evidence in legal proceedings.
+      </p>
+      {% if d.cert_url %}
+        <a href="{{ d.cert_url }}" target="_blank" class="cert-footer-link">
+          🔒 View Document Integrity Certificate
+        </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="recipient-legal">
+    <p>
+      This document was delivered via LegalDrop, a certified legal document
+      delivery platform. If you believe you received this in error, do not
+      open or download the document and contact the sender directly.
+    </p>
+  </div>
+</div>
+{% endblock %}

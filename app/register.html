@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Create Account — LegalDrop{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-card auth-card-wide">
+    <h2>Create Attorney Account</h2>
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+    <form method="post" action="/register">
+      <div class="field-row">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" name="full_name" required autofocus/>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" name="email" required/>
+        </div>
+      </div>
+      <div class="field">
+        <label>Password <small>(min 8 characters)</small></label>
+        <input type="password" name="password" required minlength="8"/>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Firm Name <small>(optional)</small></label>
+          <input type="text" name="firm_name"/>
+        </div>
+        <div class="field">
+          <label>Bar Number <small>(optional)</small></label>
+          <input type="text" name="bar_number"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>State of Practice</label>
+        <select name="state">
+          <option value="">— Select State —</option>
+          <option value="TX">Texas</option>
+          <option value="MO">Missouri</option>
+          <option value="CA">California</option>
+          <option value="NY">New York</option>
+          <option value="FL">Florida</option>
+          <option value="IL">Illinois</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-full">Create Account</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="/login">Sign in →</a></p>
+  </div>
+</div>
+{% endblock %}

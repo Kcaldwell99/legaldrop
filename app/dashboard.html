@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — LegalDrop{% endblock %}
+{% block content %}
+<div class="page-shell">
+  <div class="page-header">
+    <div>
+      <h2>Dashboard</h2>
+      <p class="subhead">{{ user.full_name }}{% if user.firm_name %} · {{ user.firm_name }}{% endif %}</p>
+    </div>
+    <a href="/deliveries/new" class="btn btn-lg">+ New Delivery</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num">{{ stats.total }}</div>
+      <div class="stat-label">Total Deliveries</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ stats.pending }}</div>
+      <div class="stat-label">Awaiting Open</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num stat-blue">{{ stats.opened }}</div>
+      <div class="stat-label">Opened</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num stat-green">{{ stats.acknowledged }}</div>
+      <div class="stat-label">Acknowledged</div>
+    </div>
+  </div>
+
+  {% if deliveries %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Recipient</th>
+          <th>Tier</th>
+          <th>Sent</th>
+          <th>Status</th>
+          <th>Cert</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in deliveries %}
+        <tr>
+          <td>
+            <a href="/deliveries/{{ d.id }}">{{ d.subject }}</a>
+            {% if d.matter_ref %}<span class="matter-ref">{{ d.matter_ref }}</span>{% endif %}
+          </td>
+          <td class="muted">{{ d.recipient_email }}</td>
+          <td><span class="tier-pill tier-{{ d.tier }}">{{ d.tier }}</span></td>
+          <td class="muted">{{ d.sent_at | dt }}</td>
+          <td><span class="status-pill status-{{ d.status }}">{{ d.status }}</span></td>
+          <td>
+            {% if d.cert_url %}
+              <a href="{{ d.cert_url }}" target="_blank" class="cert-link">🔒</a>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+          <td><a href="/deliveries/{{ d.id }}" class="btn btn-sm">View →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📨</div>
+    <h3>No deliveries yet</h3>
+    <p>Send your first certified legal document in under a minute.</p>
+    <a href="/deliveries/new" class="btn btn-lg">+ New Delivery</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

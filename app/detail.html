@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ d.subject }} — LegalDrop{% endblock %}
+{% block content %}
+<div class="page-shell">
+
+  {% if sent %}
+  <div class="alert alert-success">
+    ✅ Document sent successfully. The recipient has been notified by email.
+  </div>
+  {% endif %}
+
+  <div class="detail-header">
+    <a href="/dashboard" class="back-link">← Dashboard</a>
+    <div class="detail-title-row">
+      <h2>{{ d.subject }}</h2>
+      <span class="status-pill status-{{ d.status }}">{{ d.status | upper }}</span>
+    </div>
+    {% if d.matter_ref %}
+      <div class="matter-badge">Matter: {{ d.matter_ref }}</div>
+    {% endif %}
+  </div>
+
+  <div class="detail-body">
+    <div class="detail-main">
+
+      <div class="timeline-card">
+        <h3>Delivery Timeline</h3>
+        <div class="timeline">
+          <div class="tl-item tl-done">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Sent</strong>
+              <span>{{ d.sent_at | dt }}</span>
+            </div>
+          </div>
+          <div class="tl-item {% if d.evidentix_verified %}tl-done{% else %}tl-pending{% endif %}">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Evidentix Certified</strong>
+              {% if d.evidentix_verified %}
+                <span>SHA-256 Integrity Certificate issued</span>
+                {% if d.cert_url %}
+                  <a href="{{ d.cert_url }}" target="_blank" class="tl-link">View Certificate →</a>
+                {% endif %}
+              {% else %}
+                <span class="muted">Pending</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="tl-item {% if d.opened_at %}tl-done{% else %}tl-pending{% endif %}">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Opened</strong>
+              {% if d.opened_at %}
+                <span>{{ d.opened_at | dt }}</span>
+                {% if d.opened_ip %}<span class="muted">IP: {{ d.opened_ip }}</span>{% endif %}
+              {% else %}
+                <span class="muted">Awaiting recipient</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="tl-item {% if d.acknowledged_at %}tl-done{% else %}tl-pending{% endif %}">
+            <div class="tl-dot"></div>
+            <div class="tl-content">
+              <strong>Acknowledged</strong>
+              {% if d.acknowledged_at %}
+                <span>{{ d.acknowledged_at | dt }}</span>
+              {% else %}
+                <span class="muted">Awaiting recipient</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <h3>🔒 Evidentix Certification</h3>
+        <div class="cert-grid">
+          <div class="cert-row">
+            <span class="cert-label">SHA-256 Hash</span>
+            <span class="cert-value cert-mono">{{ d.sha256 or '—' }}</span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Certificate ID</span>
+            <span class="cert-value cert-mono">{{ d.certificate_id or '—' }}</span>
+          </div>
+          <div class="cert-row">
+            <span class="cert-label">Tier</span>
+            <span class="cert-value">
+              <span class="tier-pill tier-{{ d.tier }}">{{ tier_labels[d.tier] }}</span>
+            </span>
+          </div>
+          {% if d.custody_record_url %}
+          <div class="cert-row">
+            <span class="cert-label">Custody Record</span>
+            <a href="{{ d.custody_record_url }}" target="_blank" class="cert-value cert-link">Download PDF →</a>
+          </div>
+          {% endif %}
+        </div>
+        {% if d.cert_url %}
+        <a href="{{ d.cert_url }}" target="_blank" class="btn btn-sm" style="margin-top:1rem">
+          View Integrity Certificate
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="events-card">
+        <h3>Audit Log</h3>
+        <div class="events-list">
+          {% for e in events %}
+          <div class="event-row">
+            <span class="event-type event-{{ e.event_type | lower }}">{{ e.event_type }}</span>
+            <span class="event-time">{{ e.created_at | dt }}</span>
+            {% if e.ip_address %}<span class="event-ip muted">{{ e.ip_address }}</span>{% endif %}
+            {% if e.notes %}<span class="event-notes muted">{{ e.notes }}</span>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="detail-side">
+      <div class="side-card">
+        <div class="side-label">Recipient</div>
+        <div class="side-value">{{ d.recipient_email }}</div>
+        {% if d.recipient_name %}
+          <div class="side-sub muted">{{ d.recipient_name }}</div>
+        {% endif %}
+        <div class="side-meta">
+          {% if d.require_account %}🔐 Account required{% else %}🔗 Secure link access{% endif %}
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-label">Document</div>
+        <div class="side-value">{{ d.filename }}</div>
+        <div class="side-sub muted">{{ (d.file_size_bytes / 1024 / 1024) | round(2) }} MB</div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-label">Access Link</div>
+        <div class="link-box">
+          <input type="text" value="{{ access_url }}" id="link-input" readonly/>
+          <button onclick="copyLink()" class="btn btn-sm">Copy</button>
+        </div>
+        <div class="side-meta">Expires {{ d.expires_at | dt }}</div>
+      </div>
+
+      <div class="side-card">
+        <div class="side-label">Price Paid</div>
+        <div class="side-fee">{{ d.price_cents | dollars }}</div>
+        <span class="tier-pill tier-{{ d.tier }}">{{ tier_labels[d.tier] }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyLink() {
+  const input = document.getElementById('link-input');
+  input.select();
+  navigator.clipboard.writeText(input.value);
+  document.querySelector('.link-box .btn').textContent = 'Copied!';
+  setTimeout(() => document.querySelector('.link-box .btn').textContent = 'Copy', 2000);
+}
+</script>
+{% endblock %}

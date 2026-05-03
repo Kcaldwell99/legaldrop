@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}LegalDrop — Certified Legal Document Delivery{% endblock %}
+{% block content %}
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Powered by Evidentix™ Chain-of-Custody</div>
+    <h1>Certified document delivery.<br/><em>Court-ready proof in seconds.</em></h1>
+    <p class="hero-sub">
+      Send legal documents with cryptographic integrity certificates, timestamped delivery
+      logging, and court-admissible chain-of-custody records. Faster and stronger than certified mail.
+    </p>
+    <div class="hero-cta">
+      <a href="/register" class="btn btn-lg">Start Sending →</a>
+      <a href="/login" class="btn btn-lg btn-ghost">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<section class="compare-section">
+  <h2>LegalDrop vs. Certified Mail</h2>
+  <div class="compare-grid">
+    <div class="compare-card compare-old">
+      <h3>📮 USPS Certified Mail</h3>
+      <ul>
+        <li>$10.44+ per letter</li>
+        <li>1–5 business days delivery</li>
+        <li>Paper green card — can be lost</li>
+        <li>No file integrity proof</li>
+        <li>No content certification</li>
+        <li>Manual filing and storage</li>
+      </ul>
+    </div>
+    <div class="compare-card compare-new">
+      <h3>⚡ LegalDrop</h3>
+      <ul>
+        <li>From $9.99 per delivery</li>
+        <li>Instant delivery</li>
+        <li>Tamper-evident digital receipt</li>
+        <li class="highlight">SHA-256 file integrity certificate</li>
+        <li class="highlight">Evidentix chain-of-custody log</li>
+        <li class="highlight">Court-formatted PDF certificates</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="tiers-section">
+  <h2>Choose Your Tier</h2>
+  <div class="tiers-grid">
+    <div class="tier-card">
+      <div class="tier-price">$9.99</div>
+      <div class="tier-name">Basic Delivery</div>
+      <ul class="tier-features">
+        <li>✓ Secure delivery link</li>
+        <li>✓ SHA-256 Integrity Certificate</li>
+        <li>✓ Delivery timestamp</li>
+        <li>✓ Any file type, up to 500 MB</li>
+      </ul>
+      <a href="/register" class="btn btn-full">Get Started</a>
+    </div>
+    <div class="tier-card tier-featured">
+      <div class="tier-badge">Most Popular</div>
+      <div class="tier-price">$19.99</div>
+      <div class="tier-name">Certified Delivery</div>
+      <ul class="tier-features">
+        <li>✓ Everything in Basic</li>
+        <li>✓ Receipt logging (open + acknowledge)</li>
+        <li>✓ Evidentix custody events</li>
+        <li>✓ Delivery & Receipt Certificate PDF</li>
+        <li>✓ Sender notification on receipt</li>
+      </ul>
+      <a href="/register" class="btn btn-full">Get Started</a>
+    </div>
+    <div class="tier-card">
+      <div class="tier-price">$49.99</div>
+      <div class="tier-name">Custody Package</div>
+      <ul class="tier-features">
+        <li>✓ Everything in Certified</li>
+        <li>✓ Full chain-of-custody PDF</li>
+        <li>✓ Court-formatted exhibit ready</li>
+        <li>✓ Matter reference number</li>
+        <li>✓ Ideal for litigation & service of process</li>
+      </ul>
+      <a href="/register" class="btn btn-full">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<section class="how-section">
+  <h2>How it works</h2>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <h3>Upload & Configure</h3>
+      <p>Upload any document, enter the recipient's email, choose your tier and access method.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <h3>Evidentix Certifies</h3>
+      <p>Your document is immediately hashed with SHA-256 and certified by Evidentix before it reaches the recipient.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <h3>Recipient Accesses</h3>
+      <p>Recipient clicks a secure link or logs in. Every access event is logged in the Evidentix chain-of-custody record.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">04</div>
+      <h3>Court-Ready Certificate</h3>
+      <p>You receive a Delivery & Receipt Certificate proving what was sent, when, and that it was received — unaltered.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

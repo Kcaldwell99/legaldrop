@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}LegalDrop{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">Legal<span>Drop</span></a>
+  <div class="nav-links">
+    {% if user %}
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/deliveries/new" class="btn btn-sm">+ New Delivery</a>
+      <a href="/logout" class="nav-link">Sign Out</a>
+    {% else %}
+      <a href="/login" class="nav-link">Sign In</a>
+      <a href="/register" class="btn btn-sm">Get Started</a>
+    {% endif %}
+  </div>
+</nav>
+
+<main class="main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-logo">Legal<span>Drop</span></span>
+    <span>Certified Legal Document Delivery</span>
+    <span>Evidence verification by <a href="https://evidenceanalyzer.com" target="_blank">Evidentix™</a></span>
+  </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

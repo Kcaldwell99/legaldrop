@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sign In to Access Document — LegalDrop{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-card">
+    <h2>Sign In to Access Document</h2>
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+    <form method="post" action="/recipient/login">
+      <input type="hidden" name="token" value="{{ token }}"/>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" name="email" required autofocus/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" required/>
+      </div>
+      <button type="submit" class="btn btn-full">Sign In & Access Document</button>
+    </form>
+    <p class="auth-switch">New to LegalDrop? <a href="/recipient/register?token={{ token }}">Create account →</a></p>
+  </div>
+</div>
+{% endblock %}

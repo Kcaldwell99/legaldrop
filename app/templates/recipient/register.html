@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Verify Your Identity — LegalDrop{% endblock %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-card">
+    <h2>Verify Your Identity</h2>
+    <p class="muted" style="margin-bottom:1.5rem">
+      The sender requires you to create a LegalDrop account to access this document.
+      Your email must match the one this document was sent to.
+    </p>
+    {% if d %}
+    <div class="alert alert-info" style="margin-bottom:1rem">
+      Document: <strong>{{ d.subject }}</strong>
+    </div>
+    {% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+    <form method="post" action="/recipient/register">
+      <input type="hidden" name="token" value="{{ token }}"/>
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" name="full_name" required autofocus/>
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" name="email" value="{{ d.recipient_email if d else '' }}" required/>
+      </div>
+      <div class="field">
+        <label>Create Password</label>
+        <input type="password" name="password" required minlength="8"/>
+      </div>
+      <button type="submit" class="btn btn-full">Create Account & Access Document</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="/recipient/login?token={{ token }}">Sign in →</a></p>
+  </div>
+</div>
+{% endblock %}
